@@ -75,6 +75,32 @@ Try<Integer> recoveredWithTry = result.recoverWith(ex -> {
 });
 ```
 
+### Executing Side Effects with andFinally
+
+```java
+// Execute a side effect regardless of success or failure
+Try<Integer> resultWithSideEffect = result.andFinally(() -> System.out.println("Operation completed"));
+
+// Useful for resource cleanup
+AtomicInteger resourceClosed = new AtomicInteger(0);
+Try<String> resourceResult = Try.of(() -> {
+    // Use resource
+    return "Resource used successfully";
+}).andFinally(() -> resourceClosed.incrementAndGet());
+
+// Chain multiple andFinally calls
+Try<String> multipleActions = Try.of(() -> "Hello")
+    .andFinally(() -> System.out.println("First action"))
+    .andFinally(() -> System.out.println("Second action"))
+    .andFinally(() -> System.out.println("Third action"));
+
+// Combine with other methods
+Try<Integer> combined = Try.of(() -> "42")
+    .map(Integer::parseInt)
+    .andFinally(() -> System.out.println("Parsing completed"))
+    .recover(ex -> -1);
+```
+
 ### Integration with Optional
 
 ```java
