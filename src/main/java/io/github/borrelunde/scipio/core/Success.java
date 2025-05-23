@@ -76,6 +76,17 @@ public final class Success<ValueType> implements Try<ValueType> {
 	}
 
 	@Override
+	public Try<ValueType> andFinally(final Runnable action) {
+		Objects.requireNonNull(action, "Action cannot be null");
+		try {
+			action.run();
+			return this;
+		} catch (Exception e) {
+			return Try.failure(e);
+		}
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;

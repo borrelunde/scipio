@@ -76,6 +76,17 @@ public final class Failure<ValueType> implements Try<ValueType> {
 		}
 	}
 
+	@Override
+	public Try<ValueType> andFinally(final Runnable action) {
+		Objects.requireNonNull(action, "Action cannot be null");
+		try {
+			action.run();
+			return this;
+		} catch (Exception e) {
+			return Try.failure(e);
+		}
+	}
+
 	/**
 	 * Returns the exception that caused this failure.
 	 *
