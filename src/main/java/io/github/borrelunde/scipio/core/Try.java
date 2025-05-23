@@ -84,6 +84,15 @@ public interface Try<ValueType> {
 	Try<ValueType> recoverWith(final Function<? super Exception, ? extends Try<ValueType>> recovery);
 
 	/**
+	 * Executes the given action regardless of whether this Try is a Success or Failure.
+	 * Similar to a finally block in a try-catch-finally statement.
+	 *
+	 * @param action the action to execute
+	 * @return this Try instance if the action completes normally, otherwise a Failure containing the exception thrown by the action
+	 */
+	Try<ValueType> andFinally(final Runnable action);
+
+	/**
 	 * Creates a new Try by applying the given supplier.
 	 *
 	 * @param supplier the supplier to apply
