@@ -41,11 +41,11 @@ Try<Integer> result = Try.of(() -> Integer.parseInt("42"));
 
 ```java
 if (result.isSuccess()) {
-	System.out.println("Operation succeeded");
+    System.out.println("Operation succeeded");
 }
 
-if(result.isFailure()) {
-	System.out.println("Operation failed");
+if (result.isFailure()) {
+    System.out.println("Operation failed");
 }
 ```
 
