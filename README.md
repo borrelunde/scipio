@@ -13,6 +13,15 @@ blocks.
 - **Immutable and Thread-Safe**: All objects are immutable and thread-safe
 - **Java 8 Compatible**: Works with Java 8 and above
 
+## Installation
+
+### Prerequisites
+
+- Java 8 or higher
+- Maven 3.6 or higher
+
+It is planned that Scipio will be published to Maven Central.
+
 ## Basic Usage
 
 ### Creating a Try
