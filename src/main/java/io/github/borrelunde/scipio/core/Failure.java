@@ -87,6 +87,19 @@ public final class Failure<ValueType> implements Try<ValueType> {
 		}
 	}
 
+	@Override
+	public <ResultType> ResultType fold(
+			final Function<? super ValueType, ? extends ResultType> successFunction,
+			final Function<? super Exception, ? extends ResultType> failureFunction) {
+		Objects.requireNonNull(successFunction, "Success function cannot be null");
+		Objects.requireNonNull(failureFunction, "Failure function cannot be null");
+		try {
+			return failureFunction.apply(exception);
+		} catch (Exception e) {
+			throw new RuntimeException("Failure function threw an exception", e);
+		}
+	}
+
 	/**
 	 * Returns the exception that caused this failure.
 	 *
