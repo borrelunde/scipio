@@ -1,4 +1,4 @@
-# Scipio: A Try/Catch Monad Utility for Java
+~~# Scipio: A Try/Catch Monad Utility for Java
 
 Scipio is a lightweight Java library that provides a functional approach to exception handling through a Try/Catch monad
 implementation. It allows for more elegant, composable, and less error-prone code compared to traditional try-catch
@@ -57,6 +57,41 @@ Try<String> stringResult = result.map(n -> "The number is: " + n);
 
 // Using flatMap to chain operations that might fail
 Try<Integer> doubledResult = result.flatMap(n -> Try.of(() -> n * 2));
+
+// Using fold to transform a Try into a value of a different type
+String foldResult = result.fold(
+    value -> "Success: " + value,
+    exception -> "Failure: " + exception.getMessage()
+);
+```
+
+### Using Fold for Unified Handling
+
+```java
+// Basic usage - handle both success and failure cases in one operation
+String message = Try.of(() -> "42")
+    .fold(
+        value -> "Success: " + value,
+        exception -> "Failure: " + exception.getMessage()
+    );
+// the message will be "Success: 42"
+
+// Converting to different types
+Integer number = Try.of(() -> "42")
+    .fold(
+        Integer::parseInt,
+        exception -> -1
+    );
+// the number will be 42
+
+// Combining with other methods
+Integer combined = Try.of(() -> "39")
+    .map(s -> s + "0")
+    .fold(
+        Integer::parseInt,
+        exception -> -1
+    );
+// combined will be 390
 ```
 
 ### Recovering from Failures
@@ -121,4 +156,4 @@ This project is licensed under the MIT License — see the LICENSE file for deta
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please feel free to submit a Pull Request.~~
