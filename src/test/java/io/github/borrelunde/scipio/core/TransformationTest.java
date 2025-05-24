@@ -325,4 +325,253 @@ class TransformationTest {
 			}
 		}
 	}
+
+	/**
+	 * Tests for the fold() method.
+	 * <p>
+	 * The fold() method transforms a Try into a value of a different type by applying
+	 * either the success function to the value if it's a Success, or the failure function
+	 * to the exception if it's a Failure. These tests verify both the happy path
+	 * (successful transformation) and various edge cases like exceptions during folding.
+	 */
+	@Nested
+	@DisplayName("When using fold method")
+	class WhenUsingFoldMethod {
+
+		/**
+		 * Tests for folding Success instances.
+		 * <p>
+		 * Success instances should be transformed by the success function,
+		 * resulting in the value returned by the function.
+		 */
+		@Nested
+		@DisplayName("When folding Success")
+		class WhenFoldingSuccess {
+
+			private String result;
+
+			@BeforeEach
+			void setUp() {
+				// Arrange
+				final Try<Integer> success = Try.success(42);
+
+				// Act
+				result = success.fold(
+						i -> "Success: " + i,
+						e -> "Failure: " + e.getMessage()
+				);
+			}
+
+			@Test
+			@DisplayName("Should apply success function")
+			void shouldApplySuccessFunction() {
+				// Assert
+				assertEquals("Success: 42", result, "Success function should be applied");
+			}
+		}
+
+		/**
+		 * Tests for when the success function throws an exception.
+		 * <p>
+		 * When the success function throws, the failure function should be applied
+		 * to the thrown exception.
+		 */
+		@Nested
+		@DisplayName("When success function throws")
+		class WhenSuccessFunctionThrows {
+
+			private String result;
+			private final String errorMessage = "Success function error";
+
+			@BeforeEach
+			void setUp() {
+				// Arrange
+				final Try<Integer> success = Try.success(42);
+
+				// Act
+				result = success.fold(
+						i -> {
+							throw new RuntimeException(errorMessage);
+						},
+						e -> "Failure: " + e.getMessage()
+				);
+			}
+
+			@Test
+			@DisplayName("Should apply failure function to thrown exception")
+			void shouldApplyFailureFunctionToThrownException() {
+				// Assert
+				assertEquals("Failure: " + errorMessage, result,
+						"Failure function should be applied to exception thrown by success function");
+			}
+		}
+
+		/**
+		 * Tests for when both functions throw exceptions.
+		 * <p>
+		 * When both the success and failure functions throw, a RuntimeException should be thrown.
+		 */
+		@Nested
+		@DisplayName("When both functions throw")
+		class WhenBothFunctionsThrow {
+
+			private Try<Integer> success;
+			private final String successErrorMessage = "Success function error";
+			private final String failureErrorMessage = "Failure function error";
+
+			@BeforeEach
+			void setUp() {
+				// Arrange
+				success = Try.success(42);
+			}
+
+			@Test
+			@DisplayName("Should throw RuntimeException")
+			void shouldThrowRuntimeException() {
+				// Assert
+				RuntimeException exception = assertThrows(RuntimeException.class, () -> success.fold(
+						i -> {
+							throw new RuntimeException(successErrorMessage);
+						},
+						e -> {
+							throw new RuntimeException(failureErrorMessage);
+						}
+				), "Should throw RuntimeException when both functions throw");
+
+				assertEquals("Both success and failure functions threw exceptions", exception.getMessage(),
+						"Exception message should indicate both functions threw");
+			}
+		}
+
+		/**
+		 * Tests for folding Failure instances.
+		 * <p>
+		 * Failure instances should be transformed by the failure function,
+		 * resulting in the value returned by the function.
+		 */
+		@Nested
+		@DisplayName("When folding Failure")
+		class WhenFoldingFailure {
+
+			private String result;
+			private final String errorMessage = "Original error";
+
+			@BeforeEach
+			void setUp() {
+				// Arrange
+				final Exception exception = new RuntimeException(errorMessage);
+				final Try<Integer> failure = Try.failure(exception);
+
+				// Act
+				result = failure.fold(
+						i -> "Success: " + i,
+						e -> "Failure: " + e.getMessage()
+				);
+			}
+
+			@Test
+			@DisplayName("Should apply failure function")
+			void shouldApplyFailureFunction() {
+				// Assert
+				assertEquals("Failure: " + errorMessage, result, "Failure function should be applied");
+			}
+		}
+
+		/**
+		 * Tests for when the failure function throws an exception.
+		 * <p>
+		 * When the failure function throws, a RuntimeException should be thrown.
+		 */
+		@Nested
+		@DisplayName("When failure function throws")
+		class WhenFailureFunctionThrows {
+
+			private Try<Integer> failure;
+			@SuppressWarnings("FieldCanBeLocal")  // Improved readability
+			private final String originalErrorMessage = "Original error";
+			private final String failureErrorMessage = "Failure function error";
+
+			@BeforeEach
+			void setUp() {
+				// Arrange
+				final Exception exception = new RuntimeException(originalErrorMessage);
+				failure = Try.failure(exception);
+			}
+
+			@Test
+			@DisplayName("Should throw RuntimeException")
+			void shouldThrowRuntimeException() {
+				// Assert
+				RuntimeException exception = assertThrows(RuntimeException.class, () -> failure.fold(
+						i -> "Success: " + i,
+						e -> {
+							throw new RuntimeException(failureErrorMessage);
+						}
+				), "Should throw RuntimeException when failure function throws");
+
+				assertEquals("Failure function threw an exception", exception.getMessage(),
+						"Exception message should indicate failure function threw");
+			}
+		}
+
+		/**
+		 * Tests for null function parameters.
+		 * <p>
+		 * When either function parameter is null, a NullPointerException should be thrown.
+		 */
+		@Nested
+		@DisplayName("When function parameters are null")
+		class WhenFunctionParametersAreNull {
+
+			private Try<Integer> success;
+			private Try<Integer> failure;
+
+			@BeforeEach
+			void setUp() {
+				// Arrange
+				success = Try.success(42);
+				failure = Try.failure(new RuntimeException("Error"));
+			}
+
+			@Test
+			@DisplayName("Should throw NullPointerException for null success function")
+			void shouldThrowNullPointerExceptionForNullSuccessFunction() {
+				// Assert
+				assertThrows(NullPointerException.class, () -> success.fold(
+						null,
+						e -> "Failure: " + e.getMessage()
+				), "Should throw NullPointerException for null success function");
+			}
+
+			@Test
+			@DisplayName("Should throw NullPointerException for null failure function")
+			void shouldThrowNullPointerExceptionForNullFailureFunction() {
+				// Assert
+				assertThrows(NullPointerException.class, () -> success.fold(
+						i -> "Success: " + i,
+						null
+				), "Should throw NullPointerException for null failure function");
+			}
+
+			@Test
+			@DisplayName("Should throw NullPointerException for null success function with Failure")
+			void shouldThrowNullPointerExceptionForNullSuccessFunctionWithFailure() {
+				// Assert
+				assertThrows(NullPointerException.class, () -> failure.fold(
+						null,
+						e -> "Failure: " + e.getMessage()
+				), "Should throw NullPointerException for null success function with Failure");
+			}
+
+			@Test
+			@DisplayName("Should throw NullPointerException for null failure function with Failure")
+			void shouldThrowNullPointerExceptionForNullFailureFunctionWithFailure() {
+				// Assert
+				assertThrows(NullPointerException.class, () -> failure.fold(
+						i -> "Success: " + i,
+						null
+				), "Should throw NullPointerException for null failure function with Failure");
+			}
+		}
+	}
 }
