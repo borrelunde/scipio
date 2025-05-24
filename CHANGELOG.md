@@ -11,7 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - New `fold` method to the `Try` interface for transforming a Try into a value of a different type
 - Implementation of `fold` in both `Success` and `Failure` classes
-- Documentation and usage examples for the new method
+- New `peek` methods (`peekSuccess`, `peekFailure`, and `peek`) to the `Try` interface for executing side effects without altering the Try
+- Implementation of peek methods in both `Success` and `Failure` classes
+- Documentation and usage examples for the new methods
 
 ## [1.1.0] - 2025-05-23
 
