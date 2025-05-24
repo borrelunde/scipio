@@ -1,4 +1,4 @@
-~~# Scipio: A Try/Catch Monad Utility for Java
+# Scipio: A Try/Catch Monad Utility for Java
 
 Scipio is a lightweight Java library that provides a functional approach to exception handling through a Try/Catch monad
 implementation. It allows for more elegant, composable, and less error-prone code compared to traditional try-catch
@@ -156,4 +156,4 @@ This project is licensed under the MIT License — see the LICENSE file for deta
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.~~
+Contributions are welcome! Please feel free to submit a Pull Request.
