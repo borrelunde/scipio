@@ -87,6 +87,23 @@ public final class Success<ValueType> implements Try<ValueType> {
 	}
 
 	@Override
+	public <ResultType> ResultType fold(
+			final Function<? super ValueType, ? extends ResultType> successFunction,
+			final Function<? super Exception, ? extends ResultType> failureFunction) {
+		Objects.requireNonNull(successFunction, "Success function cannot be null");
+		Objects.requireNonNull(failureFunction, "Failure function cannot be null");
+		try {
+			return successFunction.apply(value);
+		} catch (Exception e) {
+			try {
+				return failureFunction.apply(e);
+			} catch (Exception innerException) {
+				throw new RuntimeException("Both success and failure functions threw exceptions", innerException);
+			}
+		}
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
