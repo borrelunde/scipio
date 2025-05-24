@@ -2,6 +2,7 @@ package io.github.borrelunde.scipio.core;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -85,6 +86,32 @@ public final class Failure<ValueType> implements Try<ValueType> {
 		} catch (Exception e) {
 			return Try.failure(e);
 		}
+	}
+
+	@Override
+	public Try<ValueType> peekSuccess(final Consumer<? super ValueType> consumer) {
+		// Do nothing for Failure
+		return this;
+	}
+
+	@Override
+	public Try<ValueType> peekFailure(final Consumer<? super Exception> consumer) {
+		Objects.requireNonNull(consumer, "Consumer cannot be null");
+		try {
+			consumer.accept(exception);
+			return this;
+		} catch (Exception e) {
+			return Try.failure(e);
+		}
+	}
+
+	@Override
+	public Try<ValueType> peek(
+			final Consumer<? super ValueType> successConsumer,
+			final Consumer<? super Exception> failureConsumer) {
+		Objects.requireNonNull(successConsumer, "Success consumer cannot be null");
+		Objects.requireNonNull(failureConsumer, "Failure consumer cannot be null");
+		return peekFailure(failureConsumer);
 	}
 
 	@Override

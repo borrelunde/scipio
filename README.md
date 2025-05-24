@@ -136,6 +136,37 @@ Try<Integer> combined = Try.of(() -> "42")
     .recover(ex -> -1);
 ```
 
+### Executing Side Effects with peek
+
+```java
+// Execute a side effect only on Success
+Try<Integer> success = Try.success(42)
+    .peekSuccess(value -> System.out.println("Processing value: " + value));
+// Output: "Processing value: 42"
+
+// Execute a side effect only on Failure
+Try<Integer> failure = Try.failure(new RuntimeException("Error"))
+    .peekFailure(ex -> System.out.println("Error occurred: " + ex.getMessage()));
+// Output: "Error occurred: Error"
+
+// Use peek for both Success and Failure cases
+Try<Integer> result = Try.of(() -> Integer.parseInt("42"))
+    .peek(
+        value -> System.out.println("Success: " + value),
+        ex -> System.out.println("Failure: " + ex.getMessage())
+    );
+// Output: "Success: 42"
+
+// Chain of operations
+Try<Integer> debugged = Try.of(() -> "42")
+    .peekSuccess(s -> System.out.println("Original string: " + s))
+    .map(Integer::parseInt)
+    .peekSuccess(n -> System.out.println("Parsed integer: " + n));
+// Output:
+// "Original string: 42"
+// "Parsed integer: 42"
+```
+
 ### Integration with Optional
 
 ```java
