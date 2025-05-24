@@ -93,6 +93,19 @@ public interface Try<ValueType> {
 	Try<ValueType> andFinally(final Runnable action);
 
 	/**
+	 * Transforms this Try into a value of type ResultType by applying either the success function
+	 * to the value if this is a Success, or the failure function to the exception if this is a Failure.
+	 *
+	 * @param <ResultType> the type of the result
+	 * @param successFunction the function to apply if this is a Success
+	 * @param failureFunction the function to apply if this is a Failure
+	 * @return the result of applying the appropriate function
+	 */
+	<ResultType> ResultType fold(
+			final Function<? super ValueType, ? extends ResultType> successFunction,
+			final Function<? super Exception, ? extends ResultType> failureFunction);
+
+	/**
 	 * Creates a new Try by applying the given supplier.
 	 *
 	 * @param supplier the supplier to apply
