@@ -2,6 +2,7 @@ package io.github.borrelunde.scipio.core;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -104,6 +105,36 @@ public interface Try<ValueType> {
 	<ResultType> ResultType fold(
 			final Function<? super ValueType, ? extends ResultType> successFunction,
 			final Function<? super Exception, ? extends ResultType> failureFunction);
+
+	/**
+	 * Executes the given consumer if this is a Success, otherwise does nothing.
+	 * This is useful for performing side effects on the value without altering the Try.
+	 *
+	 * @param consumer the consumer to apply to the value
+	 * @return this Try instance
+	 */
+	Try<ValueType> peekSuccess(final Consumer<? super ValueType> consumer);
+
+	/**
+	 * Executes the given consumer if this is a Failure, otherwise does nothing.
+	 * This is useful for performing side effects on the exception without altering the Try.
+	 *
+	 * @param consumer the consumer to apply to the exception
+	 * @return this Try instance
+	 */
+	Try<ValueType> peekFailure(final Consumer<? super Exception> consumer);
+
+	/**
+	 * Executes the appropriate consumer based on whether this is a Success or Failure.
+	 * This is useful for performing side effects without altering the Try.
+	 *
+	 * @param successConsumer the consumer to apply if this is a Success
+	 * @param failureConsumer the consumer to apply if this is a Failure
+	 * @return this Try instance
+	 */
+	Try<ValueType> peek(
+			final Consumer<? super ValueType> successConsumer,
+			final Consumer<? super Exception> failureConsumer);
 
 	/**
 	 * Creates a new Try by applying the given supplier.
